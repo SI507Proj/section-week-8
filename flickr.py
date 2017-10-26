@@ -25,16 +25,18 @@ def params_unique_combination(baseurl, params_d, private_keys=["api_key"]):
             res.append("{}-{}".format(k, params_d[k]))
     return baseurl + "_".join(res)
 
-def search_flickr_by_tags(tags):
+def search_flickr(method, tags=None, photo_id=None):
     if not FLICKR_API_KEY:
         raise Exception('Flickr API Key is missing!')
 
     baseurl = "https://api.flickr.com/services/rest/"
     params_diction = {
-        "method": "flickr.photos.search",
         "format": "json",
         "api_key": FLICKR_API_KEY,
         "tags": tags,
+        # "flickr.photos.search", "flickr.photos.getInfo"
+        "method": method,
+        "photo_id": photo_id,
         "per_page": 10,
         "nojsoncallback": 1
     }
@@ -65,11 +67,15 @@ CACHE_DICTION = load_cache_json()
 if DEBUG:
     print(CACHE_DICTION)
 
-results = search_flickr_by_tags('sunset summer')
+method = "flickr.photos.search"
+results = search_flickr('sunset summer', method)
 
 photos_list = []
 for r in results['photos']['photo']:
-    photos_list.append(Photo(r))
+    photo = Photo(r)
+    photos_list.append(photo)
+    method = "flickr.photos.getInfo"
+    photo_info = search_flickr(method, photo.id)
 
 print()
 print("= compare these outputs = >> ")
