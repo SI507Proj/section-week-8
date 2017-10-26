@@ -33,10 +33,12 @@ def search_flickr(method, tags=None, photo_id=None):
     params_diction = {
         "format": "json",
         "api_key": FLICKR_API_KEY,
-        "tags": tags,
+        if tags is not None:
+            "tags": tags,
         # "flickr.photos.search", "flickr.photos.getInfo"
         "method": method,
-        "photo_id": photo_id,
+        if photo_id is not None:
+            "photo_id": photo_id,
         "per_page": 10,
         "nojsoncallback": 1
     }
